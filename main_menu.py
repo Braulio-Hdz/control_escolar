@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from users import User
+from classroom import Classroom
 
 class MainMenu:
     def __init__(self, root, name, profile):
@@ -69,8 +70,10 @@ class MainMenu:
     def open_schedules():
         pass
 
-    def open_rooms():
-        pass
+    def open_rooms(self):
+        root = tk.Tk()
+        window_users = Classroom(root, self.name)
+        
 
     def open_offer():
         pass
