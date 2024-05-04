@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from users import User
 from classroom import Classroom
+from carrers import Carrers
 
 class MainMenu:
     def __init__(self, root, name, profile):
@@ -64,8 +65,9 @@ class MainMenu:
     def open_courses():
         pass
 
-    def open_carrers():
-        pass
+    def open_carrers(self):
+        root = tk.Tk()
+        window_users = Carrers(root, self.name)
 
     def open_schedules():
         pass

@@ -26,7 +26,7 @@ class Classroom:
         self.txt_salon.place(x=120, y=140)
 
         tk.Label(self.root, text='edificio: ').place(x=20, y=180)
-        self.txt_edificio = ttk.Entry(self.root, state=tk.DISABLED)
+        self.txt_edificio = tk.Entry(self.root, state=tk.DISABLED)
         self.txt_edificio.place(x=120, y=180)
 
 
