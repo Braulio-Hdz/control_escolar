@@ -57,3 +57,5 @@
 26/04/2024 11:37:30 AM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x00000254ACC809D0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
 26/04/2024 11:39:58 AM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x0000018D264509D0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
 26/04/2024 11:40:33 AM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x00000219362809D0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+01/05/2024 11:34:56 AM ERROR [connection_db.py: 29] FALLA EN LA CONEXION: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
+01/05/2024 11:35:42 AM ERROR [connection_db.py: 29] FALLA EN LA CONEXION: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
