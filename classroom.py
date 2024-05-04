@@ -26,13 +26,9 @@ class Classroom:
         self.txt_salon.place(x=120, y=140)
 
         tk.Label(self.root, text='edificio: ').place(x=20, y=180)
-        self.txt_edificio = ttk.Combobox(self.root, state=tk.DISABLED)
+        self.txt_edificio = ttk.Entry(self.root, state=tk.DISABLED)
         self.txt_edificio.place(x=120, y=180)
-        query = "SELECT nombre FROM niveles_estudio"
-        with Connection.get_connection() as cnn:
-            with cnn.cursor() as cursor:
-                cursor.execute(query)
-                self.txt_edificio['values'] = cursor.fetchall()
+
 
         #BUTTONS
         
