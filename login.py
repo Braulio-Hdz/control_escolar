@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from tkinter import messagebox
 from main_menu import MainMenu
@@ -30,6 +31,11 @@ class LoginWindow:
         email = self.email_var.get()
         password = self.password_var.get()
 
+        if(self.valid_email(email)):
+            pass
+        else:
+            messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
+
         query = f"SELECT * from usuarios WHERE email = '{email}' AND password = '{password}' "
 
         with Connection.get_connection() as cn:
@@ -49,6 +55,13 @@ class LoginWindow:
             self.main_menu = MainMenu(window, data[0][0], data[0][2])
             window.mainloop()                
 
+    def valid_email(self, email):
+        #example@mail.com
+        regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+        if re.match(regex, email):
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
     root = tk.Tk()

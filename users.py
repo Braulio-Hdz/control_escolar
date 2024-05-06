@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from tkinter import messagebox, ttk
 from connection_db import Connection
@@ -201,16 +202,19 @@ class User:
     def save_user(self):
         if(self.txt_profile.get() == 'Administrador'):
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
 
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        data = cursor.fetchall()
-                        query2 = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(data[0][0])})"""
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
-                self.principal_state()
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            data = cursor.fetchall()
+                            query2 = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(data[0][0])})"""
+                            cursor.execute(query2)
+                    messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
@@ -218,43 +222,51 @@ class User:
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0 and len(self.txt_name.get()) != 0
                and len(self.txt_last.get()) != 0 and len(self.txt_mother_last.get()) != 0 and len(self.txt_birth_date.get()) != 0 and len(self.txt_carrer.get()) != 0
                and len(self.txt_admission_date.get()) != 0 and len(self.txt_situation.get()) != 0 and len(self.txt_code.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
 
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        profile = cursor.fetchall()
-                        query = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(profile[0][0])})"""
-                        query2 = f"""INSERT INTO alumnos(email, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, carrera, fecha_ingreso, situacion, codigo) 
-                        VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', '{self.txt_birth_date.get()}',
-                        '{self.txt_carrer.get()}', '{self.txt_admission_date.get()}', '{self.txt_situation.get()}', '{self.txt_code.get()}')"""
-                        cursor.execute(query)
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Alumno AGREGADO exitosamente!')
-                self.principal_state()
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            profile = cursor.fetchall()
+                            query = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(profile[0][0])})"""
+                            query2 = f"""INSERT INTO alumnos(email, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, carrera, fecha_ingreso, situacion, codigo) 
+                            VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', '{self.txt_birth_date.get()}',
+                            '{self.txt_carrer.get()}', '{self.txt_admission_date.get()}', '{self.txt_situation.get()}', '{self.txt_code.get()}')"""
+                            cursor.execute(query)
+                            cursor.execute(query2)
+                    messagebox.showinfo(message='¡Alumno AGREGADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
         elif(self.txt_profile.get() == 'Maestro'):
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0 and len(self.txt_name.get()) != 0
                and len(self.txt_last.get()) != 0 and len(self.txt_mother_last.get()) != 0 and len(self.txt_education_level.get()) != 0 and len(self.txt_situation.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
-                query2 = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
+                
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                    query2 = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
 
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        profile = cursor.fetchall()
-                        cursor.execute(query2)
-                        education_level = cursor.fetchall()
-                        query = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(profile[0][0])})"""
-                        query2 = f"""INSERT INTO maestros(email, nombre, apellido_paterno, apellido_materno, nivel_estudios, situacion) 
-                        VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', {int(education_level[0][0])}, 
-                        '{self.txt_situation.get()}')"""
-                        cursor.execute(query)
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Maestro AGREGADO exitosamente!')
-                self.principal_state()
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            profile = cursor.fetchall()
+                            cursor.execute(query2)
+                            education_level = cursor.fetchall()
+                            query = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(profile[0][0])})"""
+                            query2 = f"""INSERT INTO maestros(email, nombre, apellido_paterno, apellido_materno, nivel_estudios, situacion) 
+                            VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', {int(education_level[0][0])}, 
+                            '{self.txt_situation.get()}')"""
+                            cursor.execute(query)
+                            cursor.execute(query2)
+                    messagebox.showinfo(message='¡Maestro AGREGADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
@@ -262,17 +274,19 @@ class User:
     def edit_user(self):
         if (self.txt_profile.get() == 'Administrador'):
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
-
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        profile = cursor.fetchall()
-                        query2 = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
-                            perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Administrador MODIFICADO exitosamente!')
-                self.principal_state()
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            profile = cursor.fetchall()
+                            query2 = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
+                                perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
+                            cursor.execute(query2)
+                    messagebox.showinfo(message='¡Administrador MODIFICADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
@@ -280,43 +294,49 @@ class User:
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0 and len(self.txt_name.get()) != 0
                and len(self.txt_last.get()) != 0 and len(self.txt_mother_last.get()) != 0 and len(self.txt_birth_date.get()) != 0 and len(self.txt_carrer.get()) != 0
                and len(self.txt_admission_date.get()) != 0 and len(self.txt_situation.get()) != 0 and len(self.txt_code.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
-
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        profile = cursor.fetchall()
-                        query = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
-                            perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
-                        query2 = f"""UPDATE alumnos SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
-                        apellido_materno='{self.txt_mother_last.get()}', fecha_nacimiento='{self.txt_birth_date.get()}', carrera='{self.txt_carrer.get()}', 
-                        fecha_ingreso='{self.txt_admission_date.get()}', situacion='{self.txt_situation.get()}', codigo='{self.txt_code.get()}'
-                        WHERE email='{self.txt_email_search.get()}'"""
-                        cursor.execute(query)
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Alumno MODIFICADO exitosamente!')
-                self.principal_state()
+        
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            profile = cursor.fetchall()
+                            query = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
+                                perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
+                            query2 = f"""UPDATE alumnos SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
+                            apellido_materno='{self.txt_mother_last.get()}', fecha_nacimiento='{self.txt_birth_date.get()}', carrera='{self.txt_carrer.get()}', 
+                            fecha_ingreso='{self.txt_admission_date.get()}', situacion='{self.txt_situation.get()}', codigo='{self.txt_code.get()}'
+                            WHERE email='{self.txt_email_search.get()}'"""
+                            cursor.execute(query)
+                            cursor.execute(query2)
+                    messagebox.showinfo(message='¡Alumno MODIFICADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
         elif(self.txt_profile.get() == 'Maestro'):
             if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0 and len(self.txt_name.get()) != 0
                and len(self.txt_last.get()) != 0 and len(self.txt_mother_last.get()) != 0 and len(self.txt_education_level.get()) != 0 and len(self.txt_situation.get()) != 0):
-                query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
-                query2 = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
-
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        cursor.execute(query)
-                        profile = cursor.fetchall()
-                        query = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
-                            perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
-                        query2 = f"""UPDATE maestros SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
-                        apellido_materno='{self.txt_mother_last.get()}', nivel_estudios='{self.txt_education_level.get()}', situacion='{self.txt_situation.get()}'
-                        WHERE email='{self.txt_email_search.get()}'"""
-                        cursor.execute(query)
-                messagebox.showinfo(message='¡Maestro MODIFICADO exitosamente!')
-                self.principal_state()
+                
+                if(self.valid_email(self.txt_email.get())):
+                    query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
+                    query2 = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            cursor.execute(query)
+                            profile = cursor.fetchall()
+                            query = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
+                                perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
+                            query2 = f"""UPDATE maestros SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
+                            apellido_materno='{self.txt_mother_last.get()}', nivel_estudios='{self.txt_education_level.get()}', situacion='{self.txt_situation.get()}'
+                            WHERE email='{self.txt_email_search.get()}'"""
+                            cursor.execute(query)
+                    messagebox.showinfo(message='¡Maestro MODIFICADO exitosamente!')
+                    self.principal_state()
+                else:
+                    messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
             else:
                 messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
                 self.principal_state()
@@ -499,6 +519,13 @@ class User:
             messagebox.showerror(message='ERROR: Llena el campo ID Cliente a buscar')
             self.principal_state()
 
+    def valid_email(self, email):
+        #example@mail.com
+        regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+        if re.match(regex, email):
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
     root = tk.Tk()

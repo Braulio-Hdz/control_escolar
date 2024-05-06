@@ -162,3 +162,8 @@
 04/05/2024 11:05:52 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x000001F98F9B7DE0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
 04/05/2024 11:07:05 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x0000020344868590; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
 04/05/2024 11:08:24 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x0000016FEBAAD690; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+06/05/2024 12:24:11 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x00000209C897BDE0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+06/05/2024 12:27:33 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x000001C4684547B0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+06/05/2024 12:28:47 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x000001C24EA4BDE0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+06/05/2024 12:33:54 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x000002105DEFBDE0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
+06/05/2024 12:45:39 PM DEBUG [connection_db.py: 26] CONEXION A DB EXITOSA: <connection object at 0x000002452A56BCD0; dsn: 'user=postgres password=xxx dbname=CONTROL_ESCOLAR host=localhost port=5432', closed: 0>
