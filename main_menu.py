@@ -85,5 +85,5 @@ class MainMenu:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = MainMenu(root, 'prueba', 3)
+    app = MainMenu(root, 'prueba', 1)
     root.mainloop()
