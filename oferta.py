@@ -10,7 +10,7 @@ class OfertaW:
         self.root = root
         self.root.title("OFERTA")
 
-        self.root.geometry("1600x800")
+        self.root.geometry("1400x800")
         self.root.resizable(height=False, width=False)
 
         self.name = name
@@ -18,6 +18,9 @@ class OfertaW:
 
         self.btn_generate_oferta = tk.Button(self.root, text='GENERAR OFERTA', command=self.generate_oferta)
         self.btn_generate_oferta.place(x=350, y=55)
+
+        self.btn_ver_oferta = tk.Button(self.root, text='VER OFERTA', command=self.show_registers)
+        self.btn_ver_oferta.place(x=350, y=85)
 
         # -------------------- TABLE --------------------------
 
@@ -27,7 +30,7 @@ class OfertaW:
         self.table = ttk.Treeview(self.root, columns=('', '', '', '', '', '', ''), show='headings')
         self.table.tag_configure('estilo_personalizado', font=('Arial', 12), background='light grey')
         # self.table.grid(row=5, column=0, columnspan=2, padx=70, pady=30)
-        self.table.place(x=90, y=250, height=400)
+        self.table.place(x=10, y=250, height=400)
         self.table.heading('#1', text='NRC')
         self.table.heading('#2', text='Curso')
         self.table.heading('#3', text='Horario')
@@ -60,7 +63,9 @@ class OfertaW:
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 query = "DELETE FROM ofertas"
+                query2 = "DELETE FROM registro"
                 cursor.execute(query)
+                cursor.execute(query2)
 
         data = Data()
         n_generacion = 1

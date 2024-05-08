@@ -7,7 +7,7 @@ class Registro:
         self.root = root
         self.root.title("REGISTRO")
 
-        self.root.geometry("800x400")
+        self.root.geometry("1400x600")
         self.root.resizable(height=False, width=False)
 
         self.name = name
@@ -15,9 +15,19 @@ class Registro:
 
         tk.Label(self.root, text=f'Ingresa los NRC de las materias que deseas agendar (Unicamente correspondientes a tu carrera)', font='Arial 10').place(x=30, y=60)
 
-        tk.Label(self.root, text='NRC: ').place(x=20, y=100)
-        self.txt_nrc = tk.Entry(self.root, state=tk.DISABLED)
-        self.txt_nrc.place(x=120, y=100)
+        tk.Label(self.root, text='Nivel de estudios: ').place(x=310, y=140)
+        self.txt_nrc = ttk.Combobox(self.root)
+        self.txt_nrc.place(x=410, y=140)
+        query = f"""SELECT carrera FROM alumnos WHERE email='{self.name}'"""
+        with Connection.get_connection() as cnn:
+            with cnn.cursor() as cursor:
+                cursor.execute(query)
+                carrera = cursor.fetchall()
+                query2 = f"""SELECT o.nrc FROM ofertas o 
+                    JOIN cursos c ON o.curso = c.clave AND
+                    c.carrera = '{carrera[0][0]}' """
+                cursor.execute(query2)
+                self.txt_nrc['values'] = cursor.fetchall()
 
         self.save_clase = tk.Button(self.root, text='GUARDAR', command=self.save_clase)
         self.save_clase.place(x=300, y=95)
@@ -29,8 +39,8 @@ class Registro:
         estilo.configure("Treeview.Heading", font=("Calibri", 14, 'bold'), padding=7)
         self.table = ttk.Treeview(self.root, columns=('', '', '', '', '', '', ''), show='headings')
         self.table.tag_configure('estilo_personalizado', font=('Arial', 12), background='light grey')
-        # self.table.grid(row=5, column=0, columnspan=2, padx=70, pady=30)
-        self.table.place(x=90, y=250, height=400)
+        self.table.grid(row=5, column=0, columnspan=2, padx=10, pady=30)
+        self.table.place(x=10, y=250, height=400)
         self.table.heading('#1', text='NRC')
         self.table.heading('#2', text='Curso')
         self.table.heading('#3', text='Horario')
@@ -47,68 +57,85 @@ class Registro:
         for register in registers:
             self.table.delete(register)
 
-        if len(where) > 0:
-            query_select = f'SELECT * FROM ofertas {where}'
-        else:
-            query_select = 'SELECT * FROM ofertas'
         with Connection.get_connection() as conn:
             with conn.cursor() as cursor:
+                query = f"""SELECT codigo FROM alumnos WHERE email='{self.name}'"""
+                cursor.execute(query)
+                codigo = cursor.fetchall()
+                query_select = f"""SELECT o.nrc, o.curso, o.horario, o.salon, o.maestro, 
+                                o.fecha_inicio, o.fecha_fin FROM ofertas o 
+                                JOIN registro r ON r.nrc_oferta = o.nrc AND
+                                r.codigo_alumno = '{codigo[0][0]}'"""
                 cursor.execute(query_select)
                 data = cursor.fetchall()
                 for a in (data):
                     self.table.insert('', 'end', values=a, tags='estilo_personalizado')
 
     def save_clase(self):
-        if(len(self.txt_nrc.get) != 0):
+        if(len(self.txt_nrc.get()) != 0):
             error = 0
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
-                    query = f"""SELECT c.nombre AS nombre_curso
-                                FROM Alumnos a
-                                JOIN Cursos c ON a.carrera = c.carrera
-                                JOIN Ofertas o ON c.clave = o.curso
-                                WHERE a.email = '{self.name}';"""
+                    query = f"""SELECT email, codigo FROM alumnos WHERE email = '{self.name}'"""
                     cursor.execute(query)
-                    data = cursor.fetchall()
+                    alumno = cursor.fetchall()
 
-                    if not data:
-                        messagebox.showinfo(message='Error: NO PERTENECES A ESA CARRERA')
-                    else:
-                        query = f"""SELECT email, codigo, FROM alumnos WHERE email = '{self.name}'"""
+                    query = f"""SELECT * FROM registro WHERE codigo_alumno = '{alumno[0][1]}'"""
+                    cursor.execute(query)
+                    registro_alumno = cursor.fetchall()
+
+                    for registro in registro_alumno:
+                        if self.txt_nrc.get() in registro:
+                            messagebox.showinfo(message='Error: Ya agendaste esa materia')
+                            error = 1
+                            break
+
+                    if error != 1:
+                        query = f"""SELECT horario, COUNT(*) AS cantidad
+                                    FROM (
+                                        SELECT r.codigo_alumno, r.nrc_oferta, o.horario
+                                        FROM registro r
+                                        JOIN ofertas o ON r.nrc_oferta = o.nrc
+                                        WHERE r.codigo_alumno = '{alumno[0][1]}'
+                                    ) AS subconsulta
+                                    GROUP BY horario
+                                    HAVING COUNT(*) > 1;"""
+                        
                         cursor.execute(query)
-                        alumno = cursor.fetchall()
+                        data = cursor.fetchall()
+                        print(data)
 
-                        query = f"""SELECT * FROM registro WHERE codigo_alumo = '{alumno[0][1]}"""
-                        cursor.execute(query)
-                        registro_alumno = cursor.fetchall()
-
-                        for registro in registro_alumno:
-                            if self.txt_nrc.get() in registro:
-                                messagebox.showinfo(message='Error: Ya agendaste esa materia')
-                                error = 1
-                                break
-
-                        if error != 1:
+                        if not data:
+                            query = f"INSERT INTO registro(codigo_alumno, nrc_oferta) VALUES('{alumno[0][1]}', '{self.txt_nrc.get()}')"
+                            cursor.execute(query)
                             query = f"""SELECT horario, COUNT(*) AS cantidad
-                                        FROM (
-                                            SELECT r.codigo_alumno, r.nrc_oferta, o.horario
-                                            FROM registro r
-                                            JOIN ofertas o ON r.nrc_oferta = o.nrc
-                                            WHERE r.codigo_alumno = '{alumno[0][1]}'
-                                        ) AS subconsulta
-                                        GROUP BY horario;"""
-                            
+                                    FROM (
+                                        SELECT r.codigo_alumno, r.nrc_oferta, o.horario
+                                        FROM registro r
+                                        JOIN ofertas o ON r.nrc_oferta = o.nrc
+                                        WHERE r.codigo_alumno = '{alumno[0][1]}'
+                                    ) AS subconsulta
+                                    GROUP BY horario
+                                    HAVING COUNT(*) > 1;"""
+                        
                             cursor.execute(query)
                             data = cursor.fetchall()
+                            print(data)
 
                             if not data:
-                                query = f"INSERT INTO registro(codigo_alumno, nrc_oferta) VALUES('{alumno[0][1]}', '{self.txt_nrc.get()}')"
+                                pass
                             else:
                                 messagebox.showinfo(message='Error: Incongruencias con los HORARIOS')
+                                query = f"""DELETE FROM registro WHERE nrc_oferta = '{self.txt_nrc.get()}'"""
+                                cursor.execute(query)
+                        else:
+                            messagebox.showinfo(message='Error: Incongruencias con los HORARIOS')
         else:
             messagebox.showinfo(message='Error: El campo NRC debe llenarse')
 
+        self.show_registers()
+
 if __name__ == '__main__':
     root = tk.Tk()
-    app = Registro(root, 'Prueba')
+    app = Registro(root, 'ejemplo@alumno.com')
     root.mainloop()

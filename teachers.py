@@ -28,7 +28,7 @@ class Teachers:
         tk.Label(self.root, text='Email: ').place(x=20, y=100)
         self.txt_email = ttk.Combobox(self.root, state=tk.DISABLED)
         self.txt_email.place(x=120, y=100)
-        query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULLAND usuarios.perfil = 3;"
+        query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULL AND usuarios.perfil = 3;"
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 cursor.execute(query)
@@ -62,6 +62,15 @@ class Teachers:
             with cnn.cursor() as cursor:
                 cursor.execute(query)
                 self.txt_education_level['values'] = cursor.fetchall()
+
+        tk.Label(self.root, text='Area: ').place(x=310, y=180)
+        self.txt_area = ttk.Combobox(self.root, state=tk.DISABLED)
+        self.txt_area.place(x=410, y=180)
+        query = "SELECT nombre FROM areas_estudio"
+        with Connection.get_connection() as cnn:
+            with cnn.cursor() as cursor:
+                cursor.execute(query)
+                self.txt_area['values'] = cursor.fetchall()
         
         #BUTTONS
 
@@ -91,6 +100,7 @@ class Teachers:
         self.txt_mother_last['state'] = tk.NORMAL
         self.txt_situation['state'] = tk.NORMAL
         self.txt_education_level['state'] = tk.NORMAL
+        self.txt_area['state'] = tk.NORMAL
 
         self.txt_email.delete(0, tk.END)
         self.txt_email_search.delete(0, tk.END)
@@ -99,6 +109,7 @@ class Teachers:
         self.txt_mother_last.delete(0, tk.END)
         self.txt_situation.delete(0, tk.END)
         self.txt_education_level.delete(0, tk.END)
+        self.txt_area.delete(0, tk.END)
         
         self.txt_email['state'] = tk.DISABLED
         self.txt_email_search['state'] = tk.NORMAL
@@ -107,6 +118,7 @@ class Teachers:
         self.txt_mother_last['state'] = tk.DISABLED
         self.txt_situation['state'] = tk.DISABLED
         self.txt_education_level['state'] = tk.DISABLED
+        self.txt_area['state'] = tk.DISABLED
         
         self.btn_new['state'] = tk.NORMAL
         self.btn_edit['state'] = tk.DISABLED
@@ -123,6 +135,7 @@ class Teachers:
         self.txt_mother_last['state'] = tk.NORMAL
         self.txt_situation['state'] = tk.NORMAL
         self.txt_education_level['state'] = tk.NORMAL
+        self.txt_area['state'] = tk.NORMAL
 
         self.btn_new['state'] = tk. DISABLED
         self.btn_edit['state'] = tk.DISABLED
@@ -137,6 +150,7 @@ class Teachers:
             if(self.valid_email(self.txt_email.get())):
                 if self.situacion(self.txt_situation.get()):
                     query = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
+                    query_area = f"SELECT id_areas FROM areas_estudio WHERE nombre='{self.txt_area.get()}'"
                     with Connection.get_connection() as cnn:
                         with cnn.cursor() as cursor:
                             cursor.execute(query)
@@ -144,10 +158,10 @@ class Teachers:
                             query2 = f"""INSERT INTO maestros(email, nombre, apellido_paterno, apellido_materno, nivel_estudios, situacion) 
                             VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', {int(education_level[0][0])}, '{self.txt_situation.get()}')"""
                             cursor.execute(query2)
-                            query3 = f"""UPDATE usuarios SET perfil = 3 WHERE usuarios.email = '{self.txt_email.get()}' """
-                            cursor.execute(query3)
-                            query4 = f"""DELETE FROM alumnos WHERE email = '{self.txt_email.get()}' """
-                            cursor.execute(query4)
+                            cursor.execute(query_area)
+                            area = cursor.fetchall()
+                            query = f"""INSERT INTO areas_maestro(areas, maestro) VALUES({area[0][0]}, '{self.txt_email.get()}')"""
+                            cursor.execute(query)
                     messagebox.showinfo(message='¡Maestro AGREGADO exitosamente!')
                     self.principal_state()
                 else:
@@ -165,6 +179,7 @@ class Teachers:
             if(self.valid_email(self.txt_email.get())):
                 if self.situacion(self.txt_situation.get()):
                     query2 = f"SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_education_level.get()}'"
+                    query_area = f"SELECT id_areas FROM areas_estudio WHERE nombre='{self.txt_area.get()}'"
                     with Connection.get_connection() as cnn:
                         with cnn.cursor() as cursor:
                             cursor.execute(query2)
@@ -172,6 +187,10 @@ class Teachers:
                             query2 = f"""UPDATE maestros SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
                             apellido_materno='{self.txt_mother_last.get()}', nivel_estudios='{int(education_level[0][0])}', situacion='{self.txt_situation.get()}'
                             WHERE email='{self.txt_email_search.get()}'"""
+                            cursor.execute(query2)
+                            cursor.execute(query_area)
+                            area = cursor.fetchall()
+                            query2 = f"""UPDATE areas_maestro SET areas = {area[0][0]}, maestro='{self.txt_email.get()}' WHERE maestro='{self.txt_email.get()}'"""
                             cursor.execute(query2)
                             
                     messagebox.showinfo(message='¡Maestro MODIFICADO exitosamente!')
@@ -213,6 +232,12 @@ class Teachers:
                         query = f"SELECT nombre FROM niveles_estudio WHERE id_niveles={maestro[0][4]}"
                         cursor.execute(query)
                         education_level = cursor.fetchall()
+                        query_area = f"SELECT areas FROM areas_maestro WHERE maestro='{data[0][0]}'"
+                        cursor.execute(query_area)
+                        id_area = cursor.fetchall()
+                        query_area = f"""SELECT nombre from areas_estudio WHERE id_areas={id_area[0][0]}"""
+                        cursor.execute(query_area)
+                        nombre_area = cursor.fetchall()
 
                         self.txt_email['state'] = tk.NORMAL
                         self.txt_email_search['state'] = tk.NORMAL
@@ -221,6 +246,7 @@ class Teachers:
                         self.txt_mother_last['state'] = tk.NORMAL
                         self.txt_situation['state'] = tk.NORMAL
                         self.txt_education_level['state'] = tk.NORMAL
+                        self.txt_area['state'] = tk.NORMAL
 
                         self.txt_email.delete(0, tk.END)
                         self.txt_name.delete(0, tk.END)
@@ -228,6 +254,7 @@ class Teachers:
                         self.txt_mother_last.delete(0, tk.END)
                         self.txt_situation.delete(0, tk.END)
                         self.txt_education_level.delete(0, tk.END)
+                        self.txt_area.delete(0, tk.END)
 
                         self.txt_email.insert(0, data[0][0])
                         self.txt_name.insert(0, maestro[0][1])
@@ -235,6 +262,7 @@ class Teachers:
                         self.txt_mother_last.insert(0, maestro[0][3])
                         self.txt_situation.insert(0, maestro[0][5])
                         self.txt_education_level.insert(0, education_level[0][0])
+                        self.txt_area.insert(0, nombre_area)
 
                         self.btn_new['state'] = tk.DISABLED
                         self.btn_save['state'] = tk.DISABLED

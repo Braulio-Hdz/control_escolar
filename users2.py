@@ -104,7 +104,7 @@ class User2:
                         data = cursor.fetchall()
                         query2 = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(data[0][0])})"""
                         cursor.execute(query2)
-                messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                messagebox.showinfo(message='¡Usuario AGREGADO exitosamente!')
                 self.principal_state()
             else:
                 messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')

@@ -7,6 +7,8 @@ from courses import Course
 from students import Students
 from teachers import Teachers
 from schedules import Schedule
+from registro import Registro
+from oferta import OfertaW
 
 class MainMenu:
     def __init__(self, root, name, profile):
@@ -28,7 +30,8 @@ class MainMenu:
         self.menu_bar.add_command(label='Carreras', command=self.open_carrers)
         self.menu_bar.add_command(label='Horarios', command=self.open_schedules)
         self.menu_bar.add_command(label='Salones', command=self.open_rooms)
-        self.menu_bar.add_command(label='Oferta', command=self.open_offer)
+        self.menu_bar.add_command(label='Oferta', command=self.open_oferta)
+        self.menu_bar.add_command(label='Registro', command=self.open_registro)
 
 
         self.name = name
@@ -83,10 +86,14 @@ class MainMenu:
     def open_rooms(self):
         root = tk.Tk()
         window_users = Classroom(root, self.name)
-        
 
-    def open_offer():
-        pass
+    def open_oferta(self):
+        root = tk.Tk()
+        window_users = OfertaW(root, self.name)
+
+    def open_registro(self):
+        root = tk.Tk()
+        window_users = Registro(root, self.name)
 
 
 if __name__ == "__main__":
