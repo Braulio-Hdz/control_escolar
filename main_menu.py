@@ -1,9 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
-from users import User
+from users2 import User2
 from classroom import Classroom
 from carrers import Carrers
 from courses import Course
+from students import Students
+from teachers import Teachers
+from schedules import Schedule
 
 class MainMenu:
     def __init__(self, root, name, profile):
@@ -55,13 +58,15 @@ class MainMenu:
 
     def open_users(self):
         root = tk.Tk()
-        window_users = User(root, self.name)
+        window_users = User2(root, self.name)
 
-    def open_students():
-        pass
+    def open_students(self):
+        root = tk.Tk()
+        window_users = Students(root, self.name)
 
-    def open_teachers():
-        pass
+    def open_teachers(self):
+        root = tk.Tk()
+        window_users = Teachers(root, self.name)
 
     def open_courses(self):
         root = tk.Tk()
@@ -71,8 +76,9 @@ class MainMenu:
         root = tk.Tk()
         window_users = Carrers(root, self.name)
 
-    def open_schedules():
-        pass
+    def open_schedules(self):
+        root = tk.Tk()
+        window_users = Schedule(root, self.name)
 
     def open_rooms(self):
         root = tk.Tk()
