@@ -8,7 +8,7 @@ from tkinter import ttk
 class OfertaW:
     def __init__(self, root, name):
         self.root = root
-        self.root.title("Alumnos")
+        self.root.title("OFERTA")
 
         self.root.geometry("1600x800")
         self.root.resizable(height=False, width=False)
