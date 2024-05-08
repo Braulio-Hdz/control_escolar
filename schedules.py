@@ -15,24 +15,47 @@ class Schedule:
         self.name = name
         tk.Label(self.root, text=f'¡USUARIO ACTUAL: {self.name}!', font='Arial 10').place(x=30, y=30)
 
+        def update_state_day(event):
+            if self.txt_primer_dia.get() == "Lunes":
+                self.txt_segundo_dia["values"] = ["Martes", "Miercoles", "Jueves", "Viernes"]
+            elif self.txt_primer_dia.get() == "Martes":
+                self.txt_segundo_dia["values"] = ["Miercoles", "Jueves", "Viernes"]
+            elif self.txt_primer_dia.get() == "Miercoles":
+                self.txt_segundo_dia["values"] = ["Jueves", "Viernes"]
+            elif self.txt_primer_dia.get() == "Jueves":
+                self.txt_segundo_dia["values"] = ["Viernes"]
+        
+        def update_state_hour(event):
+            if self.txt_fecha_inicio.get() == "07:00":
+                self.txt_fecha_fin["values"] = ["09:00", "11:00", "13:00"]
+            elif self.txt_fecha_inicio.get() == "09:00":
+                self.txt_fecha_fin["values"] = ["11:00", "13:00"]
+            elif self.txt_fecha_inicio.get() == "11:00":
+                self.txt_fecha_fin["values"] = ["13:00"]
+
         tk.Label(self.root, text='Ingresa el ID: ').place(x=60, y=60)
         self.txt_id_search = tk.Entry(self.root)
         self.txt_id_search.place(x=210, y=60)
 
         tk.Label(self.root, text='Primer Dia: ').place(x=20, y=100)
-        self.txt_primer_dia= tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_primer_dia= ttk.Combobox(self.root, state=tk.DISABLED)
+        self.txt_primer_dia["values"] = ["Lunes", "Martes", "Miercoles", "Jueves"]
         self.txt_primer_dia.place(x=120, y=100)
+        self.txt_primer_dia.bind("<<ComboboxSelected>>", update_state_day)
         
         tk.Label(self.root, text='Segundo Dia: ').place(x=20, y=140)
-        self.txt_segundo_dia= tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_segundo_dia= ttk.Combobox(self.root, state=tk.DISABLED)
         self.txt_segundo_dia.place(x=120, y=140)
 
         tk.Label(self.root, text='Hora Inicio: ').place(x=310, y=100)
-        self.txt_fecha_inicio= tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_fecha_inicio= ttk.Combobox(self.root, state=tk.DISABLED)
+        self.txt_fecha_inicio["values"] = ["07:00", "09:00", "11:00"]
         self.txt_fecha_inicio.place(x=410, y=100)
+        self.txt_fecha_inicio.bind("<<ComboboxSelected>>", update_state_hour)
 
         tk.Label(self.root, text='Hora Fin: ').place(x=310, y=140)
-        self.txt_fecha_fin= tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_fecha_fin= ttk.Combobox(self.root, state=tk.DISABLED)
+        self.txt_fecha_fin["values"] = ["09:00", "11:00", "13:00"]
         self.txt_fecha_fin.place(x=410, y=140)
 
         #BUTTONS
@@ -124,17 +147,31 @@ class Schedule:
 
     def save_schedule(self):
         if(len(self.txt_primer_dia.get()) != 0 and len(self.txt_segundo_dia.get()) != 0 and len(self.txt_fecha_inicio.get()) != 0 and len(self.txt_fecha_fin.get()) != 0):
-            hora1_dt = datetime.strptime(self.txt_fecha_inicio.get(), '%H:%M:%S')
-            hora2_dt = datetime.strptime(self.txt_fecha_fin.get(), '%H:%M:%S')
+            try:
+                hora1_dt = datetime.strptime(self.txt_fecha_inicio.get(), '%H:%M')
+                hora2_dt = datetime.strptime(self.txt_fecha_fin.get(), '%H:%M')
+
+                anterior = datetime.strptime('06:59', '%H:%M')
+                despues = datetime.strptime('13:01', '%H:%M')
+            except:
+                messagebox.showinfo(message='ERROR: Hora Invalida')
+                return
+        
 
             if hora1_dt < hora2_dt and self.validar_formato_hora(self.txt_fecha_inicio.get()) and self.validar_formato_hora(self.txt_fecha_fin.get()):
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        query = f"""INSERT INTO horarios (primer_dia, segundo_dia, hora_inicio, hora_fin) VALUES ('{self.txt_primer_dia.get()}', '{self.txt_segundo_dia.get()}', '{self.txt_fecha_inicio.get()}', '{self.txt_fecha_fin.get()}')"""
-                        print(query)
-                        cursor.execute(query)
-                messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
-                self.principal_state()
+                if anterior < hora1_dt and hora2_dt < despues:
+                    if self.es_dia_semana(self.txt_primer_dia.get()) and self.es_dia_semana(self.txt_segundo_dia.get()):
+                        with Connection.get_connection() as cnn:
+                            with cnn.cursor() as cursor:
+                                query = f"""INSERT INTO horarios (primer_dia, segundo_dia, hora_inicio, hora_fin) VALUES ('{self.txt_primer_dia.get()}', '{self.txt_segundo_dia.get()}', '{self.txt_fecha_inicio.get()}', '{self.txt_fecha_fin.get()}')"""
+                                print(query)
+                                cursor.execute(query)
+                        messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                        self.principal_state()
+                    else:
+                        messagebox.showinfo(message='ERROR: Dia invalido')  
+                else:
+                    messagebox.showinfo(message='ERROR: Horas invalidas')
             else:
                 messagebox.showinfo(message='ERROR: Formato de la fecha incorrecto')
         else:
@@ -143,18 +180,30 @@ class Schedule:
 
     def edit_schedule(self):
         if(len(self.txt_primer_dia.get()) != 0 and len(self.txt_segundo_dia.get()) != 0 and len(self.txt_fecha_inicio.get()) != 0 and len(self.txt_fecha_fin.get()) != 0):
+            try:
+                hora1_dt = datetime.strptime(self.txt_fecha_inicio.get(), '%H:%M')
+                hora2_dt = datetime.strptime(self.txt_fecha_fin.get(), '%H:%M')
 
-            hora1_dt = datetime.strptime(self.txt_fecha_inicio.get(), '%H:%M:%S')
-            hora2_dt = datetime.strptime(self.txt_fecha_fin.get(), '%H:%M:%S')
-
-            if hora1_dt < hora2_dt and self.validar_formato_hora(self.txt_fecha_inicio.get()) and self.validar_formato_hora(self.txt_fecha_fin.get()):
-                with Connection.get_connection() as cnn:
-                    with cnn.cursor() as cursor:
-                        query = f"""UPDATE horarios SET primer_dia = '{self.txt_primer_dia.get()}', segundo_dia = '{self.txt_segundo_dia.get()}', hora_inicio = '{self.txt_fecha_inicio.get()}', hora_fin = '{self.txt_fecha_fin.get()}' WHERE id = {self.txt_id_search.get()}"""
-                        print(query)
-                        cursor.execute(query)
-                messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
-                self.principal_state()
+                anterior = datetime.strptime('06:59', '%H:%M')
+                despues = datetime.strptime('13:01', '%H:%M')
+            except:
+                messagebox.showinfo(message='ERROR: Hora Invalida')
+                return
+            
+            if hora1_dt < hora2_dt  and self.validar_formato_hora(self.txt_fecha_inicio.get()) and self.validar_formato_hora(self.txt_fecha_fin.get()):
+                if anterior < hora1_dt and hora2_dt < despues: 
+                    if self.es_dia_semana(self.txt_primer_dia.get()) and self.es_dia_semana(self.txt_segundo_dia.get()):
+                        with Connection.get_connection() as cnn:
+                            with cnn.cursor() as cursor:
+                                query = f"""UPDATE horarios SET primer_dia = '{self.txt_primer_dia.get()}', segundo_dia = '{self.txt_segundo_dia.get()}', hora_inicio = '{self.txt_fecha_inicio.get()}', hora_fin = '{self.txt_fecha_fin.get()}' WHERE id = {self.txt_id_search.get()}"""
+                                print(query)
+                                cursor.execute(query)
+                        messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                        self.principal_state()
+                    else:
+                        messagebox.showinfo(message='ERROR: Dia invalido')
+                else:
+                    messagebox.showinfo(message='ERROR: Horas invalidas')
             else:
                 messagebox.showinfo(message='ERROR: Formato de la fecha incorrecto')
         else:
@@ -162,12 +211,33 @@ class Schedule:
             self.principal_state()
 
     def delete_schedule(self):
-        pass
+        with Connection.get_connection() as cnn:
+            with cnn.cursor() as cursor:
+                query = f"""DELETE FROM horarios WHERE id = {self.txt_id_search.get()}"""
+                print(query)
+                cursor.execute(query)
+        messagebox.showinfo(message='!Horario eliminado exitosamente!')
+        self.principal_state()
+
 
     def validar_formato_hora(self, hora):
-        # Patrón de expresión regular para verificar el formato HH:MM:SS
-        patron = re.compile(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$')
+        # Patrón de expresión regular para verificar el formato HH:MM
+        patron = re.compile(r'^(0[7-9]|1[0-3]):[0-5][0-9]$')
         return bool(patron.match(hora))
+
+    
+    def es_dia_semana(self, texto):
+        # Patrones para los días de la semana
+        patrones =["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"]
+        # Convertir texto a minúsculas para hacer la búsqueda insensible a mayúsculas
+        print(texto)
+        
+
+        # Buscar coincidencias con los patrones
+        for patron in patrones:
+            if re.search(patron, texto):
+                return True
+        return False
         
         
 if __name__ == "__main__":
