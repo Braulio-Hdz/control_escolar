@@ -29,7 +29,7 @@ class Students:
         tk.Label(self.root, text='Email: ').place(x=20, y=100)
         self.txt_email = ttk.Combobox(self.root, state=tk.DISABLED)
         self.txt_email.place(x=120, y=100)
-        query = "SELECT usuarios.email FROM usuarios LEFT JOIN alumnos ON alumnos.email = usuarios.email WHERE alumnos.email IS NULL ;"
+        query = "SELECT usuarios.email FROM usuarios LEFT JOIN alumnos ON alumnos.email = usuarios.email WHERE alumnos.email IS NULL AND usuarios.perfil = 2;"
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 cursor.execute(query)

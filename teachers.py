@@ -19,7 +19,7 @@ class Teachers:
         self.txt_email_search.place(x=210, y=60)
 
         def update_state(event):
-            query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULL;"
+            query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULL AND usuarios.perfil = 3;"
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
                     cursor.execute(query)
@@ -28,7 +28,7 @@ class Teachers:
         tk.Label(self.root, text='Email: ').place(x=20, y=100)
         self.txt_email = ttk.Combobox(self.root, state=tk.DISABLED)
         self.txt_email.place(x=120, y=100)
-        query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULL;"
+        query = "SELECT usuarios.email FROM usuarios LEFT JOIN maestros ON maestros.email = usuarios.email WHERE maestros.email IS NULLAND usuarios.perfil = 3;"
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 cursor.execute(query)

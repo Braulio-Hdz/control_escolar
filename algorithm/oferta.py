@@ -32,6 +32,9 @@ class Oferta:
         self._cambio_fitness = True
         return self._clases
 
+    def get_final_clases(self):
+        return self._clases
+
     def get_n_conflictos(self): return self._n_conflictos
 
     def get_fitness(self):
