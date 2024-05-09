@@ -7,7 +7,7 @@ from datetime import datetime
 class Schedule:
     def __init__(self, root, name):
         self.root = root
-        self.root.title("Horarios")
+        self.root.title("HORARIOS")
 
         self.root.geometry("600x300")
         self.root.resizable(height=False, width=False)

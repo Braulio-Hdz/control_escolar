@@ -5,7 +5,7 @@ from connection_db import Connection
 class Carrers:
     def __init__(self, root, name):
         self.root = root
-        self.root.title("Carreras")
+        self.root.title("CARRERAS")
 
         self.root.geometry("500x300")
         self.root.resizable(height=False, width=False)

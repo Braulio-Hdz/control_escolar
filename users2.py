@@ -123,7 +123,7 @@ class User2:
                         query2 = f"""UPDATE usuarios SET email='{self.txt_email.get()}', password='{self.txt_password.get()}',
                             perfil={int(profile[0][0])} WHERE email='{self.txt_email_search.get()}'"""
                         cursor.execute(query2)
-                messagebox.showinfo(message='¡Administrador MODIFICADO exitosamente!')
+                messagebox.showinfo(message='¡Usuario MODIFICADO exitosamente!')
                 self.principal_state()
             else:
                 messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
@@ -181,7 +181,7 @@ class User2:
                         self.btn_cancel['state'] = tk.NORMAL
                         self.btn_search['state'] = tk.DISABLED
         else:
-            messagebox.showerror(message='ERROR: Llena el campo ID Cliente a buscar')
+            messagebox.showerror(message='ERROR: Llena el campo EMAIL a buscar')
             self.principal_state()
               
 

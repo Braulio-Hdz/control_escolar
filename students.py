@@ -20,7 +20,7 @@ class Students:
         self.txt_email_search.place(x=210, y=60)
         
         def update_state(event):
-            query = "SELECT usuarios.email FROM usuarios LEFT JOIN alumnos ON alumnos.email = usuarios.email WHERE alumnos.email IS NULL ;"
+            query = "SELECT usuarios.email FROM usuarios LEFT JOIN alumnos ON alumnos.email = usuarios.email WHERE alumnos.email IS NULL AND usuarios.perfil = 2;"
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
                     cursor.execute(query)
@@ -44,7 +44,7 @@ class Students:
         self.txt_last = tk.Entry(self.root, state=tk.DISABLED)
         self.txt_last.place(x=120, y=180)
 
-        tk.Label(self.root, text='Apellido Materno (opcional): ').place(x=20, y=220)
+        tk.Label(self.root, text='Apellido Materno: ').place(x=20, y=220)
         self.txt_mother_last = tk.Entry(self.root, state=tk.DISABLED)
         self.txt_mother_last.place(x=180, y=220)
 

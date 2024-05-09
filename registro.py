@@ -15,7 +15,7 @@ class Registro:
 
         tk.Label(self.root, text=f'Ingresa los NRC de las materias que deseas agendar (Unicamente correspondientes a tu carrera)', font='Arial 10').place(x=30, y=60)
 
-        tk.Label(self.root, text='Nivel de estudios: ').place(x=310, y=140)
+        tk.Label(self.root, text='NRC: ').place(x=310, y=140)
         self.txt_nrc = ttk.Combobox(self.root)
         self.txt_nrc.place(x=410, y=140)
         query = f"""SELECT carrera FROM alumnos WHERE email='{self.name}'"""
