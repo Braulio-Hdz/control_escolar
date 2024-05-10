@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from tkcalendar import DateEntry
 import tkinter as tk
 from tkinter import messagebox, ttk
 from connection_db import Connection
@@ -49,7 +50,8 @@ class Students:
         self.txt_mother_last.place(x=180, y=220)
 
         tk.Label(self.root, text='Fecha de Nacimiento: ').place(x=310, y=100)
-        self.txt_birth_date = tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_birth_date = DateEntry(self.root, width=12, background='darkblue', foreground='white', boderwidth=2, state=tk.DISABLED, date_pattern="dd/mm/yyyy")
+        self.txt_birth_date.pack(pady=30, padx=30)
         self.txt_birth_date.place(x=440, y=100)
 
         tk.Label(self.root, text='Carrera: ').place(x=310, y=140)
@@ -61,8 +63,13 @@ class Students:
                 cursor.execute(query)
                 self.txt_carrer['values'] = cursor.fetchall()
 
+        def set_min_date(event):
+            date = event.widget.get_date()
+            self.txt_admission_date.configure(mindate=date)
+
         tk.Label(self.root, text='Fecha de Ingreso: ').place(x=310, y=180)
-        self.txt_admission_date = tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_admission_date = DateEntry(self.root, width=12, background='darkblue', foreground='white', boderwidth=2, state=tk.DISABLED, date_pattern="dd/mm/yyyy")
+        self.txt_admission_date.pack(pady=30, padx=30)
         self.txt_admission_date.place(x=410, y=180)
 
         tk.Label(self.root, text='Situacion: ').place(x=310, y=220)
@@ -148,11 +155,6 @@ class Students:
         self.txt_situation['state'] = tk.NORMAL
         self.txt_code['state'] = tk.NORMAL
 
-        hora_actual = datetime.now()
-        hora_formateada = hora_actual.strftime("%Y-%m-%d")
-        self.txt_admission_date.insert(0, hora_formateada)
-        self.txt_birth_date.insert(0, '2000-01-01')
-
         self.btn_new['state'] = tk.DISABLED
         self.btn_edit['state'] = tk.DISABLED
         self.btn_delete['state'] = tk.DISABLED
@@ -222,6 +224,7 @@ class Students:
         else:
             messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
             self.principal_state()
+            
 
     def delete_student(self):
         table = 'alumnos'
