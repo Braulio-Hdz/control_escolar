@@ -94,6 +94,7 @@ class OfertaW:
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 for clase in oferta_final.get_final_clases():
+                    print(clase.get_tiempo())
                     query= f"""INSERT INTO ofertas(nrc, curso, horario, salon, maestro, fecha_inicio, fecha_fin)
                             VALUES('{clase.get_id()}', '{clase.get_curso().get_numero()}', {clase.get_tiempo().get_id()},
                             '{clase.get_salon().get_numero()}', '{clase.get_profesor().get_id()}', '16/01/2024', '01/06/2024')"""

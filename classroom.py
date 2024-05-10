@@ -51,8 +51,8 @@ class Classroom:
         self.btn_cancel = tk.Button(self.root, text='CANCELAR', command=self.principal_state, state=tk.DISABLED)
         self.btn_cancel.place(x=275, y=220)
 
-        self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_classroom, state=tk.DISABLED)
-        self.btn_delete.place(x=365, y=220) 
+        #self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_classroom, state=tk.DISABLED)
+        #self.btn_delete.place(x=365, y=220) 
     
     def principal_state(self):
         self.txt_abreviatura['state'] = tk.NORMAL
@@ -71,7 +71,7 @@ class Classroom:
         self.btn_save['state'] = tk.DISABLED
         self.btn_edit['state'] = tk.DISABLED
         self.btn_cancel['state'] = tk.DISABLED
-        self.btn_delete['state'] = tk.DISABLED
+        #self.btn_delete['state'] = tk.DISABLED
 
     def new_classroom(self):
         self.txt_abreviatura['state'] = tk.NORMAL
@@ -88,7 +88,7 @@ class Classroom:
         self.btn_save['state'] = tk.NORMAL
         self.btn_edit['state'] = tk.NORMAL
         self.btn_cancel['state'] = tk.NORMAL
-        self.btn_delete['state'] = tk.NORMAL
+        #self.btn_delete['state'] = tk.NORMAL
 
     def save_classroom(self):
         if(len(self.txt_salon.get()) != 0 and len(self.txt_abreviatura.get()) != 0 and len(self.txt_edificio.get()) != 0 and len(self.txt_capacity.get()) != 0):
@@ -177,7 +177,7 @@ class Classroom:
                         self.btn_save['state'] = tk.DISABLED
                         self.btn_edit['state'] = tk.NORMAL
                         self.btn_cancel['state'] = tk.NORMAL
-                        self.btn_delete['state'] = tk.NORMAL
+                        #self.btn_delete['state'] = tk.NORMAL
 
         else:
             messagebox.showerror(message='ERROR: Llena el campo Codigo a buscar')

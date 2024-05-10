@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 from connection_db import Connection
 
@@ -26,8 +27,13 @@ class Carrers:
         self.txt_nombre.place(x=120, y=140)
 
         tk.Label(self.root, text='Nivel: ').place(x=20, y=180)
-        self.txt_nivel = tk.Entry(self.root, state=tk.DISABLED)
+        self.txt_nivel = ttk.Combobox(self.root, state=tk.DISABLED)
         self.txt_nivel.place(x=120, y=180)
+        query = "SELECT nombre FROM niveles_estudio"
+        with Connection.get_connection() as cnn:
+            with cnn.cursor() as cursor:
+                cursor.execute(query)
+                self.txt_nivel['values'] = cursor.fetchall()
 
         #BUTTONS
         
@@ -46,10 +52,12 @@ class Carrers:
         self.btn_cancel = tk.Button(self.root, text='CANCELAR', command=self.principal_state, state=tk.DISABLED)
         self.btn_cancel.place(x=275, y=220)
 
-        self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_carrers, state=tk.DISABLED)
-        self.btn_delete.place(x=365, y=220) 
+        #self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_carrers, state=tk.DISABLED)
+        #self.btn_delete.place(x=365, y=220) 
 
     def principal_state(self):
+        self.txt_clave['state'] = tk.NORMAL
+
         self.txt_clave.delete(0, tk.END)
         self.txt_nombre.delete(0, tk.END)
         self.txt_nivel.delete(0, tk.END)
@@ -62,7 +70,7 @@ class Carrers:
         self.btn_save['state'] = tk.DISABLED
         self.btn_edit['state'] = tk.DISABLED
         self.btn_cancel['state'] = tk.DISABLED
-        self.btn_delete['state'] = tk.DISABLED
+        #self.btn_delete['state'] = tk.DISABLED
     
     def search_carrers(self):
         if(len(self.txt_clave_search.get())!=0):
@@ -76,6 +84,10 @@ class Carrers:
                         messagebox.showwarning(title='ALERTA',message='¡No se ha encontrado registro con ese Codigo!')
                         self.principal_state()
                     else:
+                        self.txt_clave['state'] = tk.NORMAL
+                        query_nivel = f"""SELECT nombre FROM niveles_estudio WHERE id_niveles={data[0][2]}"""
+                        cursor.execute(query_nivel)
+                        nivel = cursor.fetchall()
                         self.txt_clave.delete(0, tk.END)
                         self.txt_nombre.delete(0, tk.END)
                         self.txt_nivel.delete(0, tk.END)
@@ -85,18 +97,20 @@ class Carrers:
                         self.txt_nivel['state'] = tk.NORMAL
 
                         self.btn_edit['state'] = tk.NORMAL
-                        self.btn_delete['state'] = tk.NORMAL
+                        #self.btn_delete['state'] = tk.NORMAL
                         self.btn_cancel['state'] = tk.NORMAL
 
                         self.txt_clave.insert(0, data[0][0])
                         self.txt_nombre.insert(0, data[0][1])
-                        self.txt_nivel.insert(0, data[0][2])
+                        self.txt_nivel.insert(0, nivel[0][0])
+
+                        self.txt_clave['state'] = tk.DISABLED
 
                         self.btn_new['state'] = tk.DISABLED
                         self.btn_save['state'] = tk.DISABLED
                         self.btn_edit['state'] = tk.NORMAL
                         self.btn_cancel['state'] = tk.NORMAL
-                        self.btn_delete['state'] = tk.NORMAL
+                        #self.btn_delete['state'] = tk.NORMAL
 
         else:
             messagebox.showerror(message='ERROR: Llena el campo Clave para buscar')
@@ -111,16 +125,26 @@ class Carrers:
         self.btn_save['state'] = tk.NORMAL
         self.btn_edit['state'] = tk.NORMAL
         self.btn_cancel['state'] = tk.NORMAL
-        self.btn_delete['state'] = tk.NORMAL
+        #self.btn_delete['state'] = tk.NORMAL
         
 
     def save_carrers(self):
         if(len(self.txt_clave.get()) != 0 and len(self.txt_nombre.get()) != 0 and len(self.txt_nivel.get()) != 0):
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
-                    query = f"""INSERT INTO carreras(clave, nombre, nivel) VALUES ('{self.txt_clave.get()}', '{self.txt_nombre.get()}', '{self.txt_nivel.get()}')"""
-                    cursor.execute(query)
-            messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                    query_valid = f"""SELECT * FROM carreras WHERE nombre = '{self.txt_nombre.get()}' AND clave = '{self.txt_clave.get()}'"""
+                    cursor.execute(query_valid)
+                    valid = cursor.fetchall()
+                    print(valid)
+                    if not valid:
+                        query_nivel = f"""SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_nivel.get()}'"""
+                        cursor.execute(query_nivel)
+                        nivel = cursor.fetchall()
+                        query = f"""INSERT INTO carreras(clave, nombre, nivel) VALUES ('{self.txt_clave.get()}', '{self.txt_nombre.get()}', {nivel[0][0]})"""
+                        cursor.execute(query)
+                        messagebox.showinfo(message='¡Carrera AGREGADA exitosamente!')
+                    else:
+                        messagebox.showerror(message='¡No puedes repetir una clave o nombre de carrera!')
             self.principal_state()
         else:
             messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
@@ -130,9 +154,18 @@ class Carrers:
         if(len(self.txt_clave.get()) != 0 and len(self.txt_nombre.get()) != 0 and len(self.txt_nivel.get()) != 0):
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
-                    query = f"""UPDATE carreras SET nombre = '{self.txt_nombre.get()}', nivel = '{self.txt_nivel.get()}' WHERE clave = '{self.txt_clave.get()}'"""
-                    cursor.execute(query)
-            messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                    query_valid = f"""SELECT * FROM carreras WHERE nombre='{self.txt_nombre.get()}' AND clave !='{self.txt_clave.get()}'"""
+                    cursor.execute(query_valid)
+                    valid = cursor.fetchall()
+                    if not valid:
+                        query_nivel = f"""SELECT id_niveles FROM niveles_estudio WHERE nombre='{self.txt_nivel.get()}'"""
+                        cursor.execute(query_nivel)
+                        nivel = cursor.fetchall()
+                        query = f"""UPDATE carreras SET nombre = '{self.txt_nombre.get()}', nivel = {nivel[0][0]} WHERE clave = '{self.txt_clave.get()}'"""
+                        cursor.execute(query)
+                        messagebox.showinfo(message='¡Carrera EDITADA exitosamente!')
+                    else:
+                        messagebox.showerror(message='¡No puedes repetir una clave o nombre de carrera!')
             self.principal_state()
         else:
             messagebox.showerror(message='ERORR: Todos los campos deben llenarse')

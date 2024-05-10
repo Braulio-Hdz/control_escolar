@@ -75,8 +75,8 @@ class Schedule:
         self.btn_cancel = tk.Button(self.root, text='CANCELAR', command=self.principal_state, state=tk.DISABLED)
         self.btn_cancel.place(x=275, y=220)
 
-        self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_schedule, state=tk.DISABLED)
-        self.btn_delete.place(x=365, y=220) 
+        #self.btn_delete = tk.Button(self.root, text='ELIMINAR', command=self.delete_schedule, state=tk.DISABLED)
+        #self.btn_delete.place(x=365, y=220) 
 
     def principal_state(self):
         self.txt_primer_dia.delete(0, tk.END)
@@ -93,7 +93,7 @@ class Schedule:
         self.btn_save['state'] = tk.DISABLED
         self.btn_edit['state'] = tk.DISABLED
         self.btn_cancel['state'] = tk.DISABLED
-        self.btn_delete['state'] = tk.DISABLED
+        #self.btn_delete['state'] = tk.DISABLED
 
     def search_schedule(self):
         if(len(self.txt_id_search.get())!= 0):
@@ -127,7 +127,7 @@ class Schedule:
                         self.btn_save['state'] = tk.DISABLED
                         self.btn_edit['state'] = tk.NORMAL
                         self.btn_cancel['state'] = tk.NORMAL
-                        self.btn_delete['state'] = tk.NORMAL
+                        #self.btn_delete['state'] = tk.NORMAL
         else:
             messagebox.showerror(message='ERROR: Llena el campo ID a buscar')
             self.principal_state()
@@ -142,7 +142,7 @@ class Schedule:
         self.btn_save['state'] = tk.NORMAL
         self.btn_edit['state'] = tk.DISABLED
         self.btn_cancel['state'] = tk.NORMAL
-        self.btn_delete['state'] = tk.DISABLED
+        #self.btn_delete['state'] = tk.DISABLED
 
 
     def save_schedule(self):

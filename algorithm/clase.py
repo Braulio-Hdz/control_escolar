@@ -20,7 +20,6 @@ class Clase:
 
     def get_salon(self):return self._salon
 
-
     def set_profesor(self, p): self._profesor = p
 
     def set_tiempo(self, t): self._tiempo = t
