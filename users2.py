@@ -97,14 +97,19 @@ class User2:
         if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0):
             if(self.valid_email(self.txt_email.get())) and len(self.txt_password.get()) >= 10:
                 query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
-
+                query_validation = f"""SELECT email FROM usuarios WHERE email = '{self.txt_email.get()}'"""
                 with Connection.get_connection() as cnn:
                     with cnn.cursor() as cursor:
                         cursor.execute(query)
                         data = cursor.fetchall()
-                        query2 = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(data[0][0])})"""
-                        cursor.execute(query2)
-                messagebox.showinfo(message='¡Usuario AGREGADO exitosamente!')
+                        cursor.execute(query_validation)
+                        emails = cursor.fetchall()
+                        if not emails:
+                            query2 = f"""INSERT INTO usuarios(email, password, perfil) VALUES ('{self.txt_email.get()}', '{self.txt_password.get()}', {int(data[0][0])})"""
+                            cursor.execute(query2)
+                            messagebox.showinfo(message='¡Usuario AGREGADO exitosamente!')
+                        else:
+                            messagebox.showerror(message="ERROR: Ya existe un usuario con ese email!")
                 self.principal_state()
             else:
                 messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
