@@ -70,7 +70,9 @@ class Teachers:
         with Connection.get_connection() as cnn:
             with cnn.cursor() as cursor:
                 cursor.execute(query)
-                self.txt_area['values'] = cursor.fetchall()
+                results = cursor.fetchall()
+                nombres = [resultado[0] for resultado in results]
+                self.txt_area['values'] = nombres  
         
         #BUTTONS
 
