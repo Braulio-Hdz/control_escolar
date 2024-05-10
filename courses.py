@@ -192,7 +192,7 @@ class Course:
                                 query3 = f"""INSERT INTO cursos(clave, area, nombre, creditos, carrera, max_n_alumnos) VALUES ('{self.txt_clave.get()}', {area}, '{self.txt_asignatura.get()}', {self.txt_creditos.get()}, '{self.txt_carreras.get()}', {self.txt_max_alumnos.get()})"""  
                                 cursor.execute(query3)
                             
-                                messagebox.showinfo(message='¡Administrador AGREGADO exitosamente!')
+                                messagebox.showinfo(message='¡Curso AGREGADO exitosamente!')
                                 self.principal_state()
                             except:
                                 messagebox.showerror(message='ERROR: Clave ya existente o datos invalidos')
@@ -206,9 +206,9 @@ class Course:
         if(len(self.txt_asignatura.get()) != 0 and len(self.txt_creditos.get()) != 0 and len(self.txt_area.get()) != 0 and len(self.txt_carreras.get()) != 0):
             with Connection.get_connection() as cnn:
                 with cnn.cursor() as cursor:
-                    query = f"""SELECT COUNT(*) FROM cursos WHERE nombre = '{self.txt_asignatura.get()}' AND clave != '{self.txt_clave.get()}'"""
+                    query = f"""SELECT * FROM cursos WHERE nombre = '{self.txt_asignatura.get()}' AND carrera = '{self.txt_carreras.get()}' AND clave != '{self.txt_clave.get()}'"""
                     cursor.execute(query)
-                    repetido = cursor.fetchone()[0]
+                    repetido = cursor.fetchall()
                     print(repetido)
 
                     if repetido:
@@ -218,10 +218,12 @@ class Course:
                         cursor.execute(query2)
                         area = cursor.fetchone()[0]
                         
-                        query3 = f"""UPDATE cursos SET area = {area}, nombre = '{self.txt_asignatura.get()}', creditos = {self.txt_creditos.get()}, carrera = '{self.txt_carreras.get()}', max_n_alumnos = {self.txt_max_alumnos.get()} WHERE clave = '{self.txt_clave_search.get()}'"""  
-                        cursor.execute(query3)
-                        
-                        messagebox.showinfo(message='¡Administrador EDITADO exitosamente!')
+                        try:
+                            query3 = f"""UPDATE cursos SET area = {area}, nombre = '{self.txt_asignatura.get()}', creditos = {self.txt_creditos.get()}, carrera = '{self.txt_carreras.get()}', max_n_alumnos = {self.txt_max_alumnos.get()} WHERE clave = '{self.txt_clave_search.get()}'"""  
+                            cursor.execute(query3)
+                            messagebox.showinfo(message='¡Curso EDITADO exitosamente!')
+                        except:
+                            messagebox.showinfo(message='Datos no válidos')
                         self.principal_state()
         else:
             messagebox.showerror(message='ERORR: Todos los campos deben llenarse')

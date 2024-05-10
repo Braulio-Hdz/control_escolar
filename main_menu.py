@@ -41,7 +41,7 @@ class MainMenu:
         self.lbl_username.place(x=40, y=40)
         
         if profile == 1:
-            pass
+            self.menu_bar.entryconfig(index='Registro', state=tk.DISABLED)
         elif profile == 2:
             self.menu_bar.entryconfig(index='Usuarios', state=tk.DISABLED)
             self.menu_bar.entryconfig(index='Maestros', state=tk.DISABLED)
@@ -54,7 +54,8 @@ class MainMenu:
             self.menu_bar.entryconfig(index='Carreras', state=tk.DISABLED)
             self.menu_bar.entryconfig(index='Horarios', state=tk.DISABLED)
             self.menu_bar.entryconfig(index='Salones', state=tk.DISABLED)
-            self.menu_bar.entryconfig(index='Oferta', state=tk.DISABLED)            
+            self.menu_bar.entryconfig(index='Oferta', state=tk.DISABLED)
+            self.menu_bar.entryconfig(index='Registro', state=tk.DISABLED)          
         else:
             messagebox.showerror(message='Hay un ERROR en el perfil')
 

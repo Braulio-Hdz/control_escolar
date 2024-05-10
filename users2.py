@@ -119,7 +119,7 @@ class User2:
 
     def edit_user(self):
         if(len(self.txt_email.get()) != 0 and len(self.txt_password.get()) != 0 and len(self.txt_profile.get()) != 0):
-            if(self.valid_email(self.txt_email.get())):
+            if(self.valid_email(self.txt_email.get()) and len(self.txt_password.get()) >= 10):
                 query = f"SELECT id_perfiles FROM perfiles WHERE nombre='{self.txt_profile.get()}'"
                 with Connection.get_connection() as cnn:
                     with cnn.cursor() as cursor:
