@@ -168,25 +168,24 @@ class Students:
             and len(self.txt_admission_date.get()) != 0 and len(self.txt_situation.get()) != 0 and len(self.txt_code.get()) != 0):
             
             if(self.valid_email(self.txt_email.get())):
-                if self.validar_fecha(self.txt_admission_date.get()) and self.validar_fecha(self.txt_birth_date.get()):
-                    if self.situacion(self.txt_situation.get()):
-                        with Connection.get_connection() as cnn:
-                            with cnn.cursor() as cursor:
+                if self.situacion(self.txt_situation.get()):
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            query_valid_code = f"""SELECT codigo FROM alumnos WHERE codigo = '{self.txt_code.get()}'"""
+                            cursor.execute(query_valid_code)
+                            code = cursor.fetchall()
+                            if not code:
+
                                 query2 = f"""INSERT INTO alumnos(email, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, carrera, fecha_ingreso, situacion, codigo) 
                                 VALUES ('{self.txt_email.get()}', '{self.txt_name.get()}', '{self.txt_last.get()}', '{self.txt_mother_last.get()}', '{self.txt_birth_date.get()}',
                                 '{self.txt_carrer.get()}', '{self.txt_admission_date.get()}', '{self.txt_situation.get()}', '{self.txt_code.get()}')"""
-                                cursor.execute(query2)
-                                query3 = f"""UPDATE usuarios SET perfil = 2 WHERE usuarios.email = '{self.txt_email.get()}' """
-                                cursor.execute(query3)
-                                query4 = f"""DELETE FROM maestros WHERE email = '{self.txt_email.get()}' """
-                                cursor.execute(query4)
-                        messagebox.showinfo(message='¡Alumno AGREGADO exitosamente!')
-                        self.principal_state()
-                    else:
-                        messagebox.showinfo(message='Error: Situacion no reconocida')
-                        self.principal_state()
+                                cursor.execute(query2)       
+                                messagebox.showinfo(message='¡Alumno AGREGADO exitosamente!') 
+                            else:
+                                messagebox.showerror(message='¡ERROR Ya existe otro alumno con ese codigo!')                                                
+                    self.principal_state()
                 else:
-                    messagebox.showinfo(message='Error: Formato de la fecha incorrecta')
+                    messagebox.showinfo(message='Error: Situacion no reconocida')
                     self.principal_state()
             else:
                 messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
@@ -201,30 +200,26 @@ class Students:
             and len(self.txt_admission_date.get()) != 0 and len(self.txt_situation.get()) != 0 and len(self.txt_code.get()) != 0):
 
             if(self.valid_email(self.txt_email.get())):
-                if self.validar_fecha(self.txt_admission_date.get()) and self.validar_fecha(self.txt_birth_date.get()):
-                    if self.situacion(self.txt_situation.get()):
-                        with Connection.get_connection() as cnn:
-                            with cnn.cursor() as cursor:
-                                query2 = f"""UPDATE alumnos SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
-                                apellido_materno='{self.txt_mother_last.get()}', fecha_nacimiento='{self.txt_birth_date.get()}', carrera='{self.txt_carrer.get()}', 
-                                fecha_ingreso='{self.txt_admission_date.get()}', situacion='{self.txt_situation.get()}', codigo='{self.txt_code.get()}'
-                                WHERE email='{self.txt_email_search.get()}'"""
-                                cursor.execute(query2)
-                                
-                        messagebox.showinfo(message='¡Alumno MODIFICADO exitosamente!')
-                        self.principal_state()
-                    else:
-                        messagebox.showinfo(message='Error: Situacion no reconocida')
-                        self.principal_state()
+                if self.situacion(self.txt_situation.get()):
+                    with Connection.get_connection() as cnn:
+                        with cnn.cursor() as cursor:
+                            query2 = f"""UPDATE alumnos SET email='{self.txt_email.get()}', nombre='{self.txt_name.get()}', apellido_paterno='{self.txt_last.get()}', 
+                            apellido_materno='{self.txt_mother_last.get()}', fecha_nacimiento='{self.txt_birth_date.get()}', carrera='{self.txt_carrer.get()}', 
+                            fecha_ingreso='{self.txt_admission_date.get()}', situacion='{self.txt_situation.get()}', codigo='{self.txt_code.get()}'
+                            WHERE email='{self.txt_email_search.get()}'"""
+                            cursor.execute(query2)
+                            
+                    messagebox.showinfo(message='¡Alumno MODIFICADO exitosamente!')
+                    self.principal_state()
                 else:
-                    messagebox.showinfo(message='Error: Formato de la fecha incorrecta')
+                    messagebox.showinfo(message='Error: Situacion no reconocida')
                     self.principal_state()
             else:
                 messagebox.showerror(message='Usuario o contraseña no validos: Formato Incorrecto')
         else:
             messagebox.showerror(message='ERORR: Todos los campos deben llenarse')
             self.principal_state()
-            
+
 
     def delete_student(self):
         table = 'alumnos'
